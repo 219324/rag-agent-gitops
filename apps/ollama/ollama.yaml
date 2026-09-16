@@ -36,7 +36,11 @@ spec:
         - containerPort: 11434
         volumeMounts:
         - name: ollama-storage
-          mountPath: /root/.ollama # 将数据持久化到这个目录
+          mountPath: /home/ollama/.ollama # ollama用户的工作目录
+  
+            # volumeMounts:
+            # - name: ollama-storage
+            # mountPath: /root/.ollama # 将数据持久化到这个目录
       volumes:
       - name: ollama-storage
         persistentVolumeClaim:
