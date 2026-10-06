@@ -1,0 +1,48 @@
+# 策略2：纯合同网协议（CNP）
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler-cnp
+  labels:
+    app: scheduler
+    strategy: cnp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduler
+      strategy: cnp
+  template:
+    metadata:
+      labels:
+        app: scheduler
+        strategy: cnp
+    spec:
+      containers:
+      - name: scheduler
+        image: scheduler:latest   # 同一个镜像，靠环境变量区分策略
+        imagePullPolicy: Never
+        env:
+        - name: STRATEGY
+          value: "cnp"
+        - name: PORT
+          value: "8080"
+        ports:
+        - containerPort: 8080
+          name: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduler-cnp
+  labels:
+    app: scheduler
+    strategy: cnp
+spec:
+  selector:
+    app: scheduler
+    strategy: cnp
+  ports:
+  - port: 8080
+    targetPort: metrics
+    name: metrics

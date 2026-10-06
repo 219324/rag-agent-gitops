@@ -1,0 +1,48 @@
+# 策略3：合同网 + 演化算法混合（CNP+EA）
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler-cnp-ea
+  labels:
+    app: scheduler
+    strategy: cnp-ea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduler
+      strategy: cnp-ea
+  template:
+    metadata:
+      labels:
+        app: scheduler
+        strategy: cnp-ea
+    spec:
+      containers:
+      - name: scheduler
+        image: scheduler:latest   # 同一个镜像，靠环境变量区分策略
+        imagePullPolicy: Never
+        env:
+        - name: STRATEGY
+          value: "cnp_ea"
+        - name: PORT
+          value: "8080"
+        ports:
+        - containerPort: 8080
+          name: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduler-cnp-ea
+  labels:
+    app: scheduler
+    strategy: cnp-ea
+spec:
+  selector:
+    app: scheduler
+    strategy: cnp-ea
+  ports:
+  - port: 8080
+    targetPort: metrics
+    name: metrics

@@ -1,0 +1,48 @@
+# 策略1：随机分配
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler-random
+  labels:
+    app: scheduler
+    strategy: random
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduler
+      strategy: random
+  template:
+    metadata:
+      labels:
+        app: scheduler
+        strategy: random
+    spec:
+      containers:
+      - name: scheduler
+        image: scheduler:latest   # 改成你自己的镜像
+        imagePullPolicy: Never
+        env:
+        - name: STRATEGY
+          value: "random"
+        - name: PORT
+          value: "8080"
+        ports:
+        - containerPort: 8080
+          name: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduler-random
+  labels:
+    app: scheduler
+    strategy: random
+spec:
+  selector:
+    app: scheduler
+    strategy: random
+  ports:
+  - port: 8080
+    targetPort: metrics
+    name: metrics
